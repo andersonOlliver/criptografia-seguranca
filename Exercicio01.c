@@ -29,16 +29,12 @@ int main(){
 	char palavra[] = { "E ESTA CIFRA E INQUEBRAVEL" };
 	char aux[MAX];
 	char alfabeto[5][5];
-	gerar_alfabeto(alfabeto);
+	
 	//FILE *arq = le_arquivo("teste.txt", "r");
+	gerar_alfabeto(alfabeto); 
 	
 	
-	for(i=0;i<5;i++){
-		for(j=0;j<5;j++){
-			printf("alfabeto[%d][%d] = %c\n", i, j, alfabeto[i][j]);
-		}
-	}
-	/*
+	
 	strcpy(aux, remove_espaco(palavra));
 	strcpy(aux, separa_pares(aux));
 	
@@ -282,16 +278,10 @@ Posicao busca_posicao(char caracter, char alfabeto[5][5]){
 	Posicao pos;
 	pos.linha = -1;
 	pos.coluna = -1;
-	
-	printf("caracter = %c\n=======================================\n", caracter);
-	for(i=0;i<5;i++)
-		for(j=0;j<5;j++)
-			printf("alfabeto[%d][%d] = %c\n",i,j,alfabeto[i][j]);
 			
 	for(i=0;i<5;i++)
 		for(j=0;j<5;j++)
 			if(alfabeto[i][j] == caracter){
-				printf("encontrou");
 				pos.coluna=j;
 				pos.linha=i;
 				break;
@@ -301,7 +291,6 @@ Posicao busca_posicao(char caracter, char alfabeto[5][5]){
 }
 
 int nova_posicao(int posicao){
-	printf("entrou com posicao = %d\n", posicao);
 	if(posicao==4)
 		return 0;
 	return posicao+1;			
