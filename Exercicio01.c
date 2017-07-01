@@ -5,35 +5,57 @@
 #include<locale.h>
 
 #define INITIAL -15975 
+#define MAX 100
 
 // declação de funções
 int menu();
 void limpa_tela();
+void limpa_buffer();
 FILE *le_arquivo(char *caminho, char *permissao);
 char *gerar_alfabeto();
 char *remove_espaco(char palavra[]);
+char *separa_pares(char palavra[]);
+char *codifica(char palavra[])
 
 int main(){
+	int opcao;
+	char palavra[] = { "E ESTA CIFRA E INQUEBRAVEL" };
+	char aux[MAX];
+	char *alfabeto = gerar_alfabeto();
+	//FILE *arq = le_arquivo("teste.txt", "r");
 	
-	int c  = menu();
-	FILE *arq = le_arquivo("teste.txt", "r");
-
+	strcpy(aux, remove_espaco(palavra));
+	strcpy(aux, separa_pares(aux));
+	
+	printf("mensagem = %s\n",aux);
+	
+	/*
 	setlocale(LC_ALL, "Portuguese");//habilita a acentuação para o português
 
-
-	char *alfabeto = gerar_alfabeto();
-
-	if(arq != NULL){
-		while((c = fgetc(arq)) != EOF)
-	        printf("Caractere lido: %c\n", c);
+	opcao = menu();
+	switch(opcao){
+		case 1:
+			
+			break;
+		case 2:
+			
+			break;
+		case 3:
+			
+			break;
+		case 4:
+			
+			break;
+		case 5:
+			
+			break;
+		default:
+			printf("\n");
+			break;			
 	}
+	*/
 	
-	fflush(stdin);
-	char palavra[100];
-	gets(palavra);
-	
-	strcpy(palavra, remove_espaco(palavra));
-	printf("palavra sem espaço = %s\n", palavra);
+
 	
 	return 0;	
 }
@@ -77,6 +99,14 @@ void limpa_tela(){
 		system("CLS");
 	#else
 		system("clear");
+	#endif
+}
+
+void limpa_buffer(){
+	#ifdef WIN32
+		fflush(stdin);
+	#else
+		__fpurge(stdin);
 	#endif
 }
 
@@ -128,13 +158,7 @@ char *gerar_alfabeto(){
 	alfabeto[4][2] = 'N';
 	alfabeto[4][3] = 'A';
 	alfabeto[4][4] = 'I';
-	
-	int i=0,j=0;
-	
-	for(i=0;i<5;i++)
-		for(j=0;j<5;j++)
-			printf("alfabeto[%d][%d] = %c\n",i,j,alfabeto[i][j]);
-			
+				
 	return alfabeto;
 }
 
@@ -150,4 +174,37 @@ char *remove_espaco(char palavra[]){
                 
     return palavra;
 }
+
+char *separa_pares(char palavra[]){
+	int i=0, indice=0, cont=1, tamanho=strlen(palavra);
+	char temp, copia[MAX];
+	
+	printf("tamanho antes = %d\n", tamanho);
+	
+	for(i=0; i<tamanho; i++){
+		temp = palavra[i];
+		
+		copia[indice] = temp;
+		indice++;
+		
+		if(palavra[i+1] == temp || (i+1)==tamanho){
+			copia[indice] = 'X';
+			indice++;
+		}
+		
+		if(indice>=1 && copia[indice-2] != ' ' && (i+1)<tamanho){
+			copia[indice] = ' ';
+			indice++;
+		}
+	}
+		
+	printf("tamanho depois = %d\n", strlen(copia));
+	printf("indice = %d\n", indice);
+	return copia;
+}
+
+char *codifica(char palavra[]){
+	
+}
+
 
