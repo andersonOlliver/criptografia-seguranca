@@ -7,6 +7,11 @@
 #define INITIAL -15975 
 #define MAX 100
 
+typedef struct _Posicao{
+	int linha;
+	int coluna;
+} Posicao;
+
 // declação de funções
 int menu();
 void limpa_tela();
@@ -15,19 +20,25 @@ FILE *le_arquivo(char *caminho, char *permissao);
 char *gerar_alfabeto();
 char *remove_espaco(char palavra[]);
 char *separa_pares(char palavra[]);
-char *codifica(char palavra[])
+char *codifica(char palavra[], char alfabeto[][5]);
+Posicao busca_posicao(char caracter, char alfabeto[][5]);
+int nova_posicao(int posicao);
 
 int main(){
-	int opcao;
+	int opcao,j,i;
 	char palavra[] = { "E ESTA CIFRA E INQUEBRAVEL" };
 	char aux[MAX];
 	char *alfabeto = gerar_alfabeto();
 	//FILE *arq = le_arquivo("teste.txt", "r");
 	
+	for(i=0;i<5;i++)
+		for(j=0;j<5;j++)
+			printf("alfabeto[%d][%d] = %s\n", i, j, alfabeto[i][j]);
+	/*
 	strcpy(aux, remove_espaco(palavra));
 	strcpy(aux, separa_pares(aux));
 	
-	printf("mensagem = %s\n",aux);
+	printf("mensagem = %s\n", codifica(aux, alfabeto));
 	
 	/*
 	setlocale(LC_ALL, "Portuguese");//habilita a acentuação para o português
@@ -203,8 +214,95 @@ char *separa_pares(char palavra[]){
 	return copia;
 }
 
-char *codifica(char palavra[]){
+char *codifica(char palavra[], char alfabeto[5][5]){
+	int i=0, passa=0, indice=0, tamanho=strlen(palavra);
+	Posicao primeiro_caracter, segundo_caracter;
+	char copia[MAX];
 	
+	printf("palavra = %s\n", palavra);
+	
+	for(i=0; i<tamanho; i++){
+		if(palavra[i] == ' ' && passa){
+			copia[indice] = palavra[i];
+			passa++;
+		}else if(palavra[i] == ' ' && !passa){
+			passa = 0;
+		}else{
+			primeiro_caracter = busca_posicao(palavra[i], alfabeto);
+			i++;
+			segundo_caracter = busca_posicao(palavra[i], alfabeto);
+			
+			printf("indice = %d\n", i);
+			printf("copia = %s\n", copia);
+			getchar();
+			/*
+			Se os dois caracteres estão na mesma linha na tabela, são substituídos pelos caracteres 
+			imediatamente à direita de cada um deles. Numa linha da tabela é considerado que à direita 
+			do último caracter está o primeiro. Exemplo: ES é codificado para OK.
+			*/
+			if(primeiro_caracter.linha==segundo_caracter.linha){
+					
+				copia[indice] = alfabeto[primeiro_caracter.linha][nova_posicao(primeiro_caracter.coluna)];
+				indice++;
+				copia[indice] = alfabeto[segundo_caracter.linha][nova_posicao(segundo_caracter.coluna)];
+				indice++;
+				
+			/* 
+			Se ambos os caracteres estiverem na mesma coluna, são substituídos pelos caracteres imediatamente
+			a baixo de cada um deles. Numa coluna da tabela é considerado que a baixo do último caracter 
+			está o primeiro. Exemplo: RA é codificado para AL
+			*/
+			}else if(primeiro_caracter.coluna == segundo_caracter.coluna){
+				
+				copia[indice] = alfabeto[nova_posicao(primeiro_caracter.linha)][primeiro_caracter.coluna];
+				indice++;
+				copia[indice] = alfabeto[nova_posicao(segundo_caracter.linha)][segundo_caracter.coluna];
+				indice++;
+				
+			/* 
+			Se os dois caracteres estão em linhas e colunas difenrentes na tabela, cada caracter é substituído 
+			pelo caracter na mesma linha e que está na mesma coluna em que está o outro caracter. 
+			Exemplo: CI é codificado por BN.
+			*/
+			}else{
+				copia[indice] = alfabeto[primeiro_caracter.linha][segundo_caracter.coluna];
+				indice++;
+				copia[indice] = alfabeto[segundo_caracter.linha][primeiro_caracter.coluna];
+				indice++;
+			}
+		}
+	}
+	
+}
+
+Posicao busca_posicao(char caracter, char alfabeto[5][5]){
+	int i, j;
+	Posicao pos;
+	pos.linha = -1;
+	pos.coluna = -1;
+	
+	printf("caracter = %c\n=======================================\n", caracter);
+	for(i=0;i<5;i++)
+		for(j=0;j<5;j++)
+			printf("alfabeto[%d][%d] = %c\n",i,j,alfabeto[i][j]);
+			
+	for(i=0;i<5;i++)
+		for(j=0;j<5;j++)
+			if(alfabeto[i][j] == caracter){
+				printf("encontrou");
+				pos.coluna=j;
+				pos.linha=i;
+				break;
+			}
+	
+	return pos;
+}
+
+int nova_posicao(int posicao){
+	printf("entrou com posicao = %d\n", posicao);
+	if(posicao==4)
+		return 0;
+	return posicao+1;			
 }
 
 
