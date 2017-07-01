@@ -220,11 +220,13 @@ char *codifica(char palavra[], char alfabeto[5][5]){
 	printf("palavra = %s\n", palavra);
 	
 	for(i=0; i<tamanho; i++){
-		if(palavra[i] == ' ' && passa){
+		if(palavra[i] == ' '){
+			printf("Econtrou caracter vazio\n");
+			if(indice>3 && copia[indice-3]==' ')
+				continue;
+			
 			copia[indice] = palavra[i];
 			passa++;
-		}else if(palavra[i] == ' ' && !passa){
-			passa = 0;
 		}else{
 			primeiro_caracter = busca_posicao(palavra[i], alfabeto);
 			i++;
