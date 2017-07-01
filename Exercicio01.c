@@ -17,7 +17,7 @@ int menu();
 void limpa_tela();
 void limpa_buffer();
 FILE *le_arquivo(char *caminho, char *permissao);
-char *gerar_alfabeto();
+void gerar_alfabeto(char alfabeto[5][5]);
 char *remove_espaco(char palavra[]);
 char *separa_pares(char palavra[]);
 char *codifica(char palavra[], char alfabeto[][5]);
@@ -25,15 +25,19 @@ Posicao busca_posicao(char caracter, char alfabeto[][5]);
 int nova_posicao(int posicao);
 
 int main(){
-	int opcao,j,i;
+	int opcao, j, i;
 	char palavra[] = { "E ESTA CIFRA E INQUEBRAVEL" };
 	char aux[MAX];
-	char *alfabeto = gerar_alfabeto();
+	char alfabeto[5][5];
+	gerar_alfabeto(alfabeto);
 	//FILE *arq = le_arquivo("teste.txt", "r");
 	
-	for(i=0;i<5;i++)
-		for(j=0;j<5;j++)
-			printf("alfabeto[%d][%d] = %s\n", i, j, alfabeto[i][j]);
+	
+	for(i=0;i<5;i++){
+		for(j=0;j<5;j++){
+			printf("alfabeto[%d][%d] = %c\n", i, j, alfabeto[i][j]);
+		}
+	}
 	/*
 	strcpy(aux, remove_espaco(palavra));
 	strcpy(aux, separa_pares(aux));
@@ -137,8 +141,7 @@ FILE *le_arquivo(char *caminho, char *permissao){
 	return arq;
 }
 
-char *gerar_alfabeto(){
-	char alfabeto[5][5];
+void gerar_alfabeto(char alfabeto[5][5]){
 	
 	alfabeto[0][0] = 'Y';
 	alfabeto[0][1] = 'Q';
@@ -169,8 +172,7 @@ char *gerar_alfabeto(){
 	alfabeto[4][2] = 'N';
 	alfabeto[4][3] = 'A';
 	alfabeto[4][4] = 'I';
-				
-	return alfabeto;
+	
 }
 
 /* 
