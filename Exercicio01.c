@@ -18,29 +18,26 @@ void limpa_tela();
 void limpa_buffer();
 FILE *le_arquivo(char *caminho, char *permissao);
 void gerar_alfabeto(char alfabeto[5][5]);
+void exibir_alfabeto(char alfabeto[5][5]);
 char *remove_espaco(char palavra[]);
 char *separa_pares(char palavra[]);
+char *separa_grupos(char palavra[]);
 char *codifica(char palavra[], char alfabeto[][5]);
 Posicao busca_posicao(char caracter, char alfabeto[][5]);
 int nova_posicao(int posicao);
+int reverte_posicao(int posicao);
 
 int main(){
 	int opcao, j, i;
-	char palavra[] = { "E ESTA CIFRA E INQUEBRAVEL" };
-	char aux[MAX];
+	char palavra[MAX];
+	char msg_cifrada[MAX];
 	char alfabeto[5][5];
+	
 	
 	//FILE *arq = le_arquivo("teste.txt", "r");
 	gerar_alfabeto(alfabeto); 
 	
 	
-	
-	strcpy(aux, remove_espaco(palavra));
-	strcpy(aux, separa_pares(aux));
-	
-	printf("mensagem = %s\n", codifica(aux, alfabeto));
-	
-	/*
 	setlocale(LC_ALL, "Portuguese");//habilita a acentuação para o português
 
 	opcao = menu();
@@ -50,23 +47,40 @@ int main(){
 			break;
 		case 2:
 			
+			limpa_buffer();
+			
+			printf("Insira a mensagem:\n");
+			gets(palavra);
+			printf("palavra = %s\n", palavra);
+			limpa_buffer();
+			getchar();
+			strcpy(msg_cifrada, separa_pares(remove_espaco(palavra)));
+			strcpy(msg_cifrada, codifica(msg_cifrada, alfabeto));
+			strcpy(msg_cifrada, separa_grupos(msg_cifrada));
+			
+			
+			printf("Mensagem cifrada com sucesso!\n");
 			break;
 		case 3:
-			
+			if(strlen(msg_cifrada)>0){
+				printf("Mensagem cifrada: %s\n", msg_cifrada);
+			}else{
+				printf("Nenhuma mensagem encontrada =(\n");
+			}
 			break;
 		case 4:
 			
 			break;
 		case 5:
-			
+			exibir_alfabeto(alfabeto);
 			break;
 		default:
-			printf("\n");
+			printf("Adeus\n");
+			getchar();
 			break;			
 	}
-	*/
 	
-
+	
 	
 	return 0;	
 }
@@ -101,7 +115,9 @@ int menu(){
 		
 	}while(opcao < 1 || opcao > 6);
 	
+	limpa_buffer();
 	limpa_tela();
+	
 	return opcao;
 }
 
@@ -171,6 +187,18 @@ void gerar_alfabeto(char alfabeto[5][5]){
 	
 }
 
+void exibir_alfabeto(char alfabeto[5][5]){
+	int i,j;
+	printf("Alfabeto:\n");
+	for(i=0;i<5;i++){
+		printf("\t");
+		for(j=0;j<5;j++)
+			printf("%c ", alfabeto[i][j]);
+			
+		printf("\n");
+	}
+}
+
 /* 
 	Remove caracteres vazios da palavra
 */
@@ -188,28 +216,60 @@ char *separa_pares(char palavra[]){
 	int i=0, indice=0, cont=1, tamanho=strlen(palavra);
 	char temp, copia[MAX];
 	
-	printf("tamanho antes = %d\n", tamanho);
 	
-	for(i=0; i<tamanho; i++){
-		temp = palavra[i];
-		
-		copia[indice] = temp;
-		indice++;
-		
-		if(palavra[i+1] == temp || (i+1)==tamanho){
+	// adiciona X entre caracteres repetidos
+	for(i=0; palavra[i] != '\0'; i++){
+		if(palavra[i] == palavra[i+1]){
+			copia[indice] = palavra[i];
+			indice++;
 			copia[indice] = 'X';
-			indice++;
+		}else{
+			copia[indice] = palavra[i];
 		}
-		
-		if(indice>=1 && copia[indice-2] != ' ' && (i+1)<tamanho){
-			copia[indice] = ' ';
-			indice++;
-		}
+		indice++;
 	}
-		
-	printf("tamanho depois = %d\n", strlen(copia));
-	printf("indice = %d\n", indice);
-	return copia;
+	// se quantidade ímpar de caracteres adiciona 'X' no final
+	if(strlen(copia)%2 != 0){
+		copia[indice] = 'X';
+		indice++;
+	}
+	copia[indice] = '\0';
+	
+	printf("Copia = %s\n", copia);
+	getchar();
+	
+	indice = 0;
+	for(i=0; copia[i] != '\0'; i++){
+		if(i%2 != 0){
+			palavra[indice] = copia[i];
+			indice++;
+			palavra[indice] = ' ';
+		}else{
+			palavra[indice] = copia[i];
+		}
+		indice++;
+	}
+	palavra[indice] = '\0';
+	
+	return palavra;
+}
+
+char *separa_grupos(char palavra[]){
+		int i, y, indice=0;
+		char copia[MAX];
+	for(i = 0; palavra[i] != '\0'; i++){
+		if((i+1)%4==0){
+			copia[indice] = palavra[i];
+			indice++;
+			copia[indice] = ' ';
+		}else{
+			copia[indice] = palavra[i];
+		}
+		indice++;
+	}
+	copia[indice] = '\0';
+    
+    return copia;
 }
 
 char *codifica(char palavra[], char alfabeto[5][5]){
@@ -217,24 +277,12 @@ char *codifica(char palavra[], char alfabeto[5][5]){
 	Posicao primeiro_caracter, segundo_caracter;
 	char copia[MAX];
 	
-	printf("palavra = %s\n", palavra);
-	
-	for(i=0; i<tamanho; i++){
-		if(palavra[i] == ' '){
-			printf("Econtrou caracter vazio\n");
-			if(indice>3 && copia[indice-3]==' ')
-				continue;
-			
-			copia[indice] = palavra[i];
-			passa++;
-		}else{
+	for(i=0; palavra[i] != '\0'; i++){
+		if(palavra[i] != ' '){
 			primeiro_caracter = busca_posicao(palavra[i], alfabeto);
 			i++;
 			segundo_caracter = busca_posicao(palavra[i], alfabeto);
 			
-			printf("indice = %d\n", i);
-			printf("copia = %s\n", copia);
-			getchar();
 			/*
 			Se os dois caracteres estão na mesma linha na tabela, são substituídos pelos caracteres 
 			imediatamente à direita de cada um deles. Numa linha da tabela é considerado que à direita 
@@ -270,8 +318,11 @@ char *codifica(char palavra[], char alfabeto[5][5]){
 				copia[indice] = alfabeto[segundo_caracter.linha][primeiro_caracter.coluna];
 				indice++;
 			}
+			copia[indice] = '\0';
 		}
 	}
+	
+	return copia;
 	
 }
 
@@ -296,6 +347,12 @@ int nova_posicao(int posicao){
 	if(posicao==4)
 		return 0;
 	return posicao+1;			
+}
+
+int reverte_posicao(int posicao){
+	if(posicao==0)
+		return 4;
+	return posicao-1;			
 }
 
 
