@@ -84,6 +84,7 @@ int main(void){
 				break;
 			case 4:
 				cabecalho("DECIFRAR MENSAGEM");
+				printf("Oops! Opção em contrução...\n");
 				break;
 			case 5:
 				cabecalho("EXIBIR ALFABETO");
@@ -95,8 +96,10 @@ int main(void){
 				getchar();
 				break;			
 		}
-		if(opcao!=6)
+		if(opcao!=6){
+			printf("\nPressione qualquer tecla para continuar...\n");
 			getchar();
+		}
 		limpa_tela();
 	}while(opcao!=6);
 	
@@ -236,7 +239,7 @@ void alterar_alfabeto(char alfabeto[5][5]){
 		scanf("%d", &opcao);
 	}while(opcao<1 || opcao>3);
 	
-	selecionar_base(base, alfabeto, opcao);
+	selecionar_base(base, alfabeto, opcao-1);
 	
 	
 }
