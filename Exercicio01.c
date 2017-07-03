@@ -16,9 +16,15 @@ typedef struct _Posicao{
 int menu();
 void limpa_tela();
 void limpa_buffer();
+void cabecalho(char nome[50]);
 FILE *le_arquivo(char *caminho, char *permissao);
+
 void gerar_alfabeto(char alfabeto[5][5]);
+void alterar_alfabeto(char alfabeto[5][5]);
+void gerar_base(char base[3][5][5]);
+
 void exibir_alfabeto(char alfabeto[5][5]);
+
 char *remove_espaco(char palavra[]);
 char *separa_pares(char palavra[]);
 char *separa_grupos(char palavra[]);
@@ -27,7 +33,7 @@ Posicao busca_posicao(char caracter, char alfabeto[][5]);
 int nova_posicao(int posicao);
 int reverte_posicao(int posicao);
 
-int main(){
+int main(void){
 	int opcao, j, i;
 	char palavra[MAX];
 	char msg_cifrada[MAX];
@@ -40,45 +46,57 @@ int main(){
 	
 	setlocale(LC_ALL, "Portuguese");//habilita a acentuação para o português
 
-	opcao = menu();
-	switch(opcao){
-		case 1:
-			
-			break;
-		case 2:
-			
-			limpa_buffer();
-			
-			printf("Insira a mensagem:\n");
-			gets(palavra);
-			printf("palavra = %s\n", palavra);
-			limpa_buffer();
+	do{
+		
+		opcao = menu();
+		switch(opcao){
+			case 1:
+				cabecalho("ALTERAR CIFRA");
+				alterar_alfabeto(alfabeto);
+				break;
+			case 2:
+				cabecalho("CIFRAR MENSAGEM");
+				limpa_buffer();
+				
+				printf("Insira a mensagem:\n");
+				gets(palavra);
+				strcpy(palavra,strupr(palavra));
+				palavra[strlen(palavra)] = '\0';
+				printf("palavra = %s\n", palavra);
+				limpa_buffer();
+				
+				strcpy(msg_cifrada, separa_pares(remove_espaco(palavra)));
+				strcpy(msg_cifrada, codifica(msg_cifrada, alfabeto));
+				strcpy(msg_cifrada, separa_grupos(msg_cifrada));
+				
+				
+				printf("Mensagem cifrada com sucesso!\n");
+				break;
+			case 3:
+				cabecalho("MENSAGEM CIFRADA");
+				if(strlen(msg_cifrada)>0){
+					printf("Mensagem cifrada: %s\n", msg_cifrada);
+				}else{
+					printf("Nenhuma mensagem encontrada =(\n");
+				}
+				break;
+			case 4:
+				cabecalho("DECIFRAR MENSAGEM");
+				break;
+			case 5:
+				cabecalho("EXIBIR ALFABETO");
+				exibir_alfabeto(alfabeto);
+				break;
+			default:
+				cabecalho("SAINDO");
+				printf("Adeus\n");
+				getchar();
+				break;			
+		}
+		if(opcao!=6)
 			getchar();
-			strcpy(msg_cifrada, separa_pares(remove_espaco(palavra)));
-			strcpy(msg_cifrada, codifica(msg_cifrada, alfabeto));
-			strcpy(msg_cifrada, separa_grupos(msg_cifrada));
-			
-			
-			printf("Mensagem cifrada com sucesso!\n");
-			break;
-		case 3:
-			if(strlen(msg_cifrada)>0){
-				printf("Mensagem cifrada: %s\n", msg_cifrada);
-			}else{
-				printf("Nenhuma mensagem encontrada =(\n");
-			}
-			break;
-		case 4:
-			
-			break;
-		case 5:
-			exibir_alfabeto(alfabeto);
-			break;
-		default:
-			printf("Adeus\n");
-			getchar();
-			break;			
-	}
+		limpa_tela();
+	}while(opcao!=6);
 	
 	
 	
@@ -137,6 +155,12 @@ void limpa_buffer(){
 	#endif
 }
 
+void cabecalho(char nome[50]){
+	printf("----------------------------------------\n");
+	printf("\t %s\n", nome);
+	printf("----------------------------------------\n");
+}
+
 /* 
 	Abre e retorna arquivo
 	Recebe caminho do arquivo e permissão como parâmetro
@@ -154,7 +178,6 @@ FILE *le_arquivo(char *caminho, char *permissao){
 }
 
 void gerar_alfabeto(char alfabeto[5][5]){
-	
 	alfabeto[0][0] = 'Y';
 	alfabeto[0][1] = 'Q';
 	alfabeto[0][2] = 'D';
@@ -184,7 +207,119 @@ void gerar_alfabeto(char alfabeto[5][5]){
 	alfabeto[4][2] = 'N';
 	alfabeto[4][3] = 'A';
 	alfabeto[4][4] = 'I';
+}
+
+void alterar_alfabeto(char alfabeto[5][5]){
+	char base[3][5][5];
+	int x,y,z;
+	gerar_base(base);
 	
+	for(x=0;x<3;x++){
+		printf("Pressione %d para:\n",x);
+		for(y=0;y<5;y++){
+			printf("\t");
+			for(z=0;z<5;z++)
+				printf("%c ", base[x][y][z]);
+			printf("\n");
+		}
+		printf("\n");
+	}
+	printf("----------------------------------------\n");
+	printf("Selecione uma opção:\n");
+	getchar();
+	
+}
+
+void gerar_base(char base[3][5][5]){
+	base[0][0][0] = 'Y';
+	base[0][0][1] = 'Q';
+	base[0][0][2] = 'D';
+	base[0][0][3] = 'L';
+	base[0][0][4] = 'G';
+	
+	base[0][1][0] = 'M';
+	base[0][1][1] = 'J';
+	base[0][1][2] = 'X';
+	base[0][1][3] = 'F';
+	base[0][1][4] = 'U';
+	
+	base[0][2][0] = 'V';
+	base[0][2][1] = 'W';
+	base[0][2][2] = 'C';
+	base[0][2][3] = 'P';
+	base[0][2][4] = 'B';
+	
+	base[0][3][0] = 'O';
+	base[0][3][1] = 'S';
+	base[0][3][2] = 'K';
+	base[0][3][3] = 'R';
+	base[0][3][4] = 'E';
+	
+	base[0][4][0] = 'T';
+	base[0][4][1] = 'H';
+	base[0][4][2] = 'N';
+	base[0][4][3] = 'A';
+	base[0][4][4] = 'I';
+
+	base[1][4][0] = 'Y';
+	base[1][4][1] = 'Q';
+	base[1][4][2] = 'D';
+	base[1][4][3] = 'L';
+	base[1][4][4] = 'G';
+	
+	base[1][3][0] = 'M';
+	base[1][3][1] = 'J';
+	base[1][3][2] = 'X';
+	base[1][3][3] = 'F';
+	base[1][3][4] = 'U';
+	
+	base[1][2][0] = 'V';
+	base[1][2][1] = 'W';
+	base[1][2][2] = 'C';
+	base[1][2][3] = 'P';
+	base[1][2][4] = 'B';
+	
+	base[1][1][0] = 'O';
+	base[1][1][1] = 'S';
+	base[1][1][2] = 'K';
+	base[1][1][3] = 'R';
+	base[1][1][4] = 'E';
+	
+	base[1][0][0] = 'T';
+	base[1][0][1] = 'H';
+	base[1][0][2] = 'N';
+	base[1][0][3] = 'A';
+	base[1][0][4] = 'I';
+
+	base[2][4][0] = 'Y';
+	base[2][4][1] = 'Q';
+	base[2][4][2] = 'D';
+	base[2][4][3] = 'L';
+	base[2][4][4] = 'G';
+	
+	base[2][2][0] = 'M';
+	base[2][2][1] = 'J';
+	base[2][2][2] = 'X';
+	base[2][2][3] = 'F';
+	base[2][2][4] = 'U';
+	
+	base[2][1][0] = 'V';
+	base[2][1][1] = 'W';
+	base[2][1][2] = 'C';
+	base[2][1][3] = 'P';
+	base[2][1][4] = 'B';
+	
+	base[2][3][0] = 'O';
+	base[2][3][1] = 'S';
+	base[2][3][2] = 'K';
+	base[2][3][3] = 'R';
+	base[2][3][4] = 'E';
+	
+	base[2][0][0] = 'T';
+	base[2][0][1] = 'H';
+	base[2][0][2] = 'N';
+	base[2][0][3] = 'A';
+	base[2][0][4] = 'I';
 }
 
 void exibir_alfabeto(char alfabeto[5][5]){
