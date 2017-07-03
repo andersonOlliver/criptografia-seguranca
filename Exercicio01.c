@@ -22,7 +22,7 @@ FILE *le_arquivo(char *caminho, char *permissao);
 void gerar_alfabeto(char alfabeto[5][5]);
 void alterar_alfabeto(char alfabeto[5][5]);
 void gerar_base(char base[3][5][5]);
-
+void selecionar_base(char base[3][5][5], char alfabeto[5][5], int opcao);
 void exibir_alfabeto(char alfabeto[5][5]);
 
 char *remove_espaco(char palavra[]);
@@ -31,6 +31,8 @@ char *separa_grupos(char palavra[]);
 char *codifica(char palavra[], char alfabeto[][5]);
 Posicao busca_posicao(char caracter, char alfabeto[][5]);
 int nova_posicao(int posicao);
+
+char *decodifica(char palavra[], char alfabeto[][5]);
 int reverte_posicao(int posicao);
 
 int main(void){
@@ -211,23 +213,39 @@ void gerar_alfabeto(char alfabeto[5][5]){
 
 void alterar_alfabeto(char alfabeto[5][5]){
 	char base[3][5][5];
-	int x,y,z;
+	int x,y,z,opcao = INITIAL;
 	gerar_base(base);
 	
-	for(x=0;x<3;x++){
-		printf("Pressione %d para:\n",x);
-		for(y=0;y<5;y++){
-			printf("\t");
-			for(z=0;z<5;z++)
-				printf("%c ", base[x][y][z]);
+	do{
+		if(opcao!= INITIAL){
+			limpa_tela();
+			cabecalho("ALTERAR CIFRA");
+		}
+		for(x=0;x<3;x++){
+			printf("Pressione %d para:\n",x+1);
+			for(y=0;y<5;y++){
+				printf("\t");
+				for(z=0;z<5;z++)
+					printf("%c ", base[x][y][z]);
+				printf("\n");
+			}
 			printf("\n");
 		}
-		printf("\n");
-	}
-	printf("----------------------------------------\n");
-	printf("Selecione uma opção:\n");
-	getchar();
+		printf("----------------------------------------\n");
+		printf("Selecione uma opção:\n");
+		scanf("%d", &opcao);
+	}while(opcao<1 || opcao>3);
 	
+	selecionar_base(base, alfabeto, opcao);
+	
+	
+}
+
+void selecionar_base(char base[3][5][5], char alfabeto[5][5], int opcao){
+	int i,j;
+	for(i=0;i<5;i++)
+		for(j=0;j<5;j++)
+			alfabeto[i][j] = base[opcao][i][j];
 }
 
 void gerar_base(char base[3][5][5]){
