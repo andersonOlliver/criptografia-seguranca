@@ -17,7 +17,6 @@ int menu();
 void limpa_tela();
 void limpa_buffer();
 void cabecalho(char nome[50]);
-FILE *le_arquivo(char *caminho, char *permissao);
 
 void gerar_alfabeto(char alfabeto[5][5]);
 void alterar_alfabeto(char alfabeto[5][5]);
@@ -38,7 +37,7 @@ int reverte_posicao(int posicao);
 int main(void){
 	int opcao, j, i;
 	char palavra[MAX];
-	char msg_cifrada[MAX];
+	char msg_cifrada[MAX], msg_decifrada[MAX];
 	char alfabeto[5][5];
 	
 	
@@ -56,6 +55,7 @@ int main(void){
 				cabecalho("ALTERAR CIFRA");
 				alterar_alfabeto(alfabeto);
 				break;
+				
 			case 2:
 				cabecalho("CIFRAR MENSAGEM");
 				limpa_buffer();
@@ -74,6 +74,7 @@ int main(void){
 				
 				printf("Mensagem cifrada com sucesso!\n");
 				break;
+				
 			case 3:
 				cabecalho("MENSAGEM CIFRADA");
 				if(strlen(msg_cifrada)>0){
@@ -82,21 +83,29 @@ int main(void){
 					printf("Nenhuma mensagem encontrada =(\n");
 				}
 				break;
+				
 			case 4:
 				cabecalho("DECIFRAR MENSAGEM");
-				printf("Oops! Opção em contrução...\n");
+				msg_decifrada[0] = '\0';
+				if(strlen(msg_cifrada) > 0){
+					printf("Mensagem decifrada: %s\n", decodifica(msg_cifrada, alfabeto));
+				}else{
+					printf("Nenhuma mensagem encontrada =(\n)");
+				}
 				break;
+				
 			case 5:
 				cabecalho("EXIBIR ALFABETO");
 				exibir_alfabeto(alfabeto);
 				break;
+				
 			default:
 				cabecalho("SAINDO");
 				printf("Adeus\n");
-				getchar();
 				break;			
 		}
 		if(opcao!=6){
+			printf("----------------------------------------\n");
 			printf("\nPressione qualquer tecla para continuar...\n");
 			getchar();
 		}
@@ -108,9 +117,7 @@ int main(void){
 	return 0;	
 }
 
-
-
-// exibe menu e le a opção desejada
+// exibe menu, le e retorna a opção desejada
 int menu(){
 	setlocale(LC_ALL, "Portuguese"); //habilita a acentuação para o português
 	int opcao = INITIAL;
@@ -144,6 +151,7 @@ int menu(){
 	return opcao;
 }
 
+// limpar tela em windows e linux
 void limpa_tela(){
 	#ifdef WIN32
 		system("CLS");
@@ -152,6 +160,7 @@ void limpa_tela(){
 	#endif
 }
 
+// limpar buffer em windows e linux
 void limpa_buffer(){
 	#ifdef WIN32
 		fflush(stdin);
@@ -160,28 +169,14 @@ void limpa_buffer(){
 	#endif
 }
 
+// Para exibir cabeçalho em cada escolha
 void cabecalho(char nome[50]){
 	printf("----------------------------------------\n");
 	printf("\t %s\n", nome);
 	printf("----------------------------------------\n");
 }
 
-/* 
-	Abre e retorna arquivo
-	Recebe caminho do arquivo e permissão como parâmetro
-	Em caso de erro exibe mensagem e retorna valor nulo 
-*/
-FILE *le_arquivo(char *caminho, char *permissao){
-	FILE *arq;
-	
-	if((arq = fopen(caminho, permissao)) == NULL){
-		printf("Erro ao abrir arquivo \"%s\"\n", caminho);
-		return NULL;
-	}
-	
-	return arq;
-}
-
+// Gera um alfabeto inicial
 void gerar_alfabeto(char alfabeto[5][5]){
 	alfabeto[0][0] = 'Y';
 	alfabeto[0][1] = 'Q';
@@ -214,6 +209,7 @@ void gerar_alfabeto(char alfabeto[5][5]){
 	alfabeto[4][4] = 'I';
 }
 
+// Alterar a cifra 
 void alterar_alfabeto(char alfabeto[5][5]){
 	char base[3][5][5];
 	int x,y,z,opcao = INITIAL;
@@ -244,6 +240,7 @@ void alterar_alfabeto(char alfabeto[5][5]){
 	
 }
 
+// para copiar a opção escolhida pelo usuário para a matriz alfabeto
 void selecionar_base(char base[3][5][5], char alfabeto[5][5], int opcao){
 	int i,j;
 	for(i=0;i<5;i++)
@@ -251,6 +248,7 @@ void selecionar_base(char base[3][5][5], char alfabeto[5][5], int opcao){
 			alfabeto[i][j] = base[opcao][i][j];
 }
 
+// apenas para não gerar a base de cifras
 void gerar_base(char base[3][5][5]){
 	base[0][0][0] = 'Y';
 	base[0][0][1] = 'Q';
@@ -343,6 +341,7 @@ void gerar_base(char base[3][5][5]){
 	base[2][0][4] = 'I';
 }
 
+// para exibir o alfabeto
 void exibir_alfabeto(char alfabeto[5][5]){
 	int i,j;
 	printf("Alfabeto:\n");
@@ -355,9 +354,7 @@ void exibir_alfabeto(char alfabeto[5][5]){
 	}
 }
 
-/* 
-	Remove caracteres vazios da palavra
-*/
+// Remove caracteres vazios da palavra
 char *remove_espaco(char palavra[]){
 	int x, y;
 	for(x = 0; palavra[x] != '\0'; x++)
@@ -368,6 +365,7 @@ char *remove_espaco(char palavra[]){
     return palavra;
 }
 
+// separa em pares e adiciona X
 char *separa_pares(char palavra[]){
 	int i=0, indice=0, cont=1, tamanho=strlen(palavra);
 	char temp, copia[MAX];
@@ -410,6 +408,7 @@ char *separa_pares(char palavra[]){
 	return palavra;
 }
 
+// separa em grupos de 4 caracteres
 char *separa_grupos(char palavra[]){
 		int i, y, indice=0;
 		char copia[MAX];
@@ -428,6 +427,7 @@ char *separa_grupos(char palavra[]){
     return copia;
 }
 
+// codificação é feita aqui
 char *codifica(char palavra[], char alfabeto[5][5]){
 	int i=0, passa=0, indice=0, tamanho=strlen(palavra);
 	Posicao primeiro_caracter, segundo_caracter;
@@ -482,6 +482,61 @@ char *codifica(char palavra[], char alfabeto[5][5]){
 	
 }
 
+// decodificação é feita aqui
+char *decodifica(char palavra[], char alfabeto[][5]){
+	int i=0, passa=0, indice=0, tamanho=strlen(palavra);
+	Posicao primeiro_caracter, segundo_caracter;
+	char copia[MAX];
+	
+	for(i=0; palavra[i] != '\0'; i++){
+		if(palavra[i] != ' '){
+			primeiro_caracter = busca_posicao(palavra[i], alfabeto);
+			i++;
+			segundo_caracter = busca_posicao(palavra[i], alfabeto);
+			
+			/*
+			Se os dois caracteres estão na mesma linha na tabela, são substituídos pelos caracteres 
+			imediatamente à direita de cada um deles. Numa linha da tabela é considerado que à direita 
+			do último caracter está o primeiro. Exemplo: ES é codificado para OK.
+			*/
+			if(primeiro_caracter.linha==segundo_caracter.linha){
+					
+				copia[indice] = alfabeto[primeiro_caracter.linha][reverte_posicao(primeiro_caracter.coluna)];
+				indice++;
+				copia[indice] = alfabeto[segundo_caracter.linha][reverte_posicao(segundo_caracter.coluna)];
+				indice++;
+				
+			/* 
+			Se ambos os caracteres estiverem na mesma coluna, são substituídos pelos caracteres imediatamente
+			a baixo de cada um deles. Numa coluna da tabela é considerado que a baixo do último caracter 
+			está o primeiro. Exemplo: RA é codificado para AL
+			*/
+			}else if(primeiro_caracter.coluna == segundo_caracter.coluna){
+				
+				copia[indice] = alfabeto[reverte_posicao(primeiro_caracter.linha)][primeiro_caracter.coluna];
+				indice++;
+				copia[indice] = alfabeto[reverte_posicao(segundo_caracter.linha)][segundo_caracter.coluna];
+				indice++;
+				
+			/* 
+			Se os dois caracteres estão em linhas e colunas difenrentes na tabela, cada caracter é substituído 
+			pelo caracter na mesma linha e que está na mesma coluna em que está o outro caracter. 
+			Exemplo: CI é codificado por BN.
+			*/
+			}else{
+				copia[indice] = alfabeto[primeiro_caracter.linha][segundo_caracter.coluna];
+				indice++;
+				copia[indice] = alfabeto[segundo_caracter.linha][primeiro_caracter.coluna];
+				indice++;
+			}
+			copia[indice] = '\0';
+		}
+	}
+	
+	return copia;
+}
+
+// retorna a posição do caracter na cifra
 Posicao busca_posicao(char caracter, char alfabeto[5][5]){
 	int i, j;
 	Posicao pos;
@@ -499,12 +554,14 @@ Posicao busca_posicao(char caracter, char alfabeto[5][5]){
 	return pos;
 }
 
+// retorna nova posição para codificar
 int nova_posicao(int posicao){
 	if(posicao==4)
 		return 0;
 	return posicao+1;			
 }
 
+// retorna nova posição para decodificar
 int reverte_posicao(int posicao){
 	if(posicao==0)
 		return 4;
