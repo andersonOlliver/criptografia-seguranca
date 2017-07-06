@@ -1,3 +1,9 @@
+/*
+	Desenvolvido por Anderson Oliveira Santos
+	como atividade da disciplina de 
+	Criptografia e Segurança de Dados
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -64,7 +70,6 @@ int main(void){
 				gets(palavra);
 				strcpy(palavra,strupr(palavra));
 				palavra[strlen(palavra)] = '\0';
-				printf("palavra = %s\n", palavra);
 				limpa_buffer();
 				
 				strcpy(msg_cifrada, separa_pares(remove_espaco(palavra)));
@@ -388,9 +393,6 @@ char *separa_pares(char palavra[]){
 		indice++;
 	}
 	copia[indice] = '\0';
-	
-	printf("Copia = %s\n", copia);
-	getchar();
 	
 	indice = 0;
 	for(i=0; copia[i] != '\0'; i++){
